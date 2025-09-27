@@ -1,0 +1,102 @@
+fun onColonyBuilderBuild(builder: Unit, tile: Tile, city: City, game: Game, config: ModConfig) {
+    val player = city.ownerPlayer
+
+    // Helper to send localized feedback
+    fun fail(msgKey: String, vararg args: Any) {
+        player.sendPopup(localize(msgKey, *args))   // replace with actual UI message
+    }
+
+    // Basic validation
+    if (tile.resource == null) {
+        fail("colony.build.fail.no_resource")
+        return
+    }
+    if (tile.resource.resourceType != config.validResourceType) {
+        fail("colony.build.fail.not_luxury", tile.resource.name)
+        return
+    }
+    val distance = tile.distanceTo(city)
+    if (distance > config.claimRadius) {
+        fail("colony.build.fail.too_far", distance, config.claimRadius)
+        return
+    }
+    if (config.requireConnection && !city.isConnected(tile)) {
+        // Optionally, you could allow building if autoBuildRoadIfNeeded true and path possible
+        if (config.autoBuildRoadIfNeeded) {
+            // optionally build road logic here or attempt to auto-build (complex)
+            fail("colony.build.info.attempt_road_required")
+            return
+        } else {
+            fail("colony.build.fail.not_connected")
+            return
+        }
+    }
+
+    // Prevent building on tiles owned by other civs (unless config allows)
+    if (tile.owner != null && tile.owner != city.owner) {
+        if (!config.allowStealingOtherCivsTiles) {
+            fail("colony.build.fail.tile_owned_by_other", tile.owner.name)
+            return
+        } else {
+            // you may want to warn about diplomatic penalties
+            player.sendPopup(localize("colony.build.warn.take_owned_tile", tile.owner.name))
+        }
+    }
+
+    // Prevent building if tile already has an improvement or a special improvement (custom)
+    if (tile.improvement != null) {
+        fail("colony.build.fail.already_improved", tile.improvement.name)
+        return
+    }
+    if (tile.isPillaged) {
+        fail("colony.build.fail.pillaged")
+        return
+    }
+
+    // Everything OK -> perform the operation inside a transaction
+    try {
+        game.beginTransaction("colonyBuilderBuild")
+
+        // Claim the tile for the colony owner (owner may be null if unclaimed)
+        tile.owner = city.owner
+        city.addTile(tile)
+
+        // Place a special improvement representing the extractor
+        tile.improvement = Improvement("ColonyExtractor", owner = city.owner)
+
+        if (config.harvestResourceOnly) {
+            // Override yields so only resource yield counts.
+            tile.yield.food = 0
+            tile.yield.production = 0
+            tile.yield.gold = 0
+            tile.flags["harvestResourceOnly"] = true
+        }
+
+        // Remove resource from map if that is part of design, or mark it as extracted
+        // tile.resource = tile.resource   // keep resource, mark as extracted if needed
+        tile.flags["colonyExtractorActive"] = true
+        tile.flags["extractedByCity"] = city.id
+
+        // Consume builder if configured
+        if (config.consumeBuilderOnBuild) {
+            builder.consume() // placeholder; call the actual method to remove the unit
+        } else {
+            // Reduce builder charges / mark used once
+            builder.charges = (builder.charges ?: 1) - 1
+            if (builder.charges <= 0) builder.consume()
+        }
+
+        // Update city yields & UI
+        city.recalculateYields()
+        player.updateUIForCity(city)
+
+        game.commitTransaction()
+        player.sendPopup(localize("colony.build.success", tile.resource.name, tile.x, tile.y))
+
+    } catch (ex: Exception) {
+        game.rollbackTransaction()
+        player.sendPopup(localize("colony.build.fail.unknown"))
+        // log exception to mod log
+        game.log("ColonyBuilderBuild error: ${ex.message}")
+    }
+}

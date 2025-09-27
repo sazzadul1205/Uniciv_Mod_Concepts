@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Colonialism",
+    "cost": 500,
+    "era": "Industrial",          
+    "prerequisites": ["Steam Power"],  
+    "description": "Advanced colonial expansion. Allows each city to found up to 3 colonies."
+  }
+]

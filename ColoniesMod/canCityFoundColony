@@ -1,0 +1,33 @@
+fun canCityFoundColony(originCity: City, allColonies: List<City>, techTree: TechTree): Boolean {
+    val initialTech = "Guilds"        // Unlocks the first colony
+    val advancedTech = "Colonialism"  // Advanced tech to unlock up to 3 colonies per city
+
+    // Cannot found colony until initial tech researched
+    if (!techTree.isResearched(originCity.ownerPlayer, initialTech)) {
+        originCity.ownerPlayer.sendPopup(
+            "Cannot found colony: Research $initialTech to unlock colonization."
+        )
+        return false
+    }
+
+    // Count colonies founded by this city
+    val coloniesFromThisCity = allColonies.count { it.originCity == originCity }
+
+    // Determine max colonies per city
+    val maxPerCity = if (techTree.isResearched(originCity.ownerPlayer, advancedTech)) 3 else 1
+
+    // If exceeded max colonies
+    if (coloniesFromThisCity >= maxPerCity) {
+        val unlockMsg = if (!techTree.isResearched(originCity.ownerPlayer, advancedTech)) {
+            "Research $advancedTech to found more colonies."
+        } else {
+            ""
+        }
+        originCity.ownerPlayer.sendPopup(
+            "This city has already founded $coloniesFromThisCity colony/cities. $unlockMsg"
+        )
+        return false
+    }
+
+    return true
+}

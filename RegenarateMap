@@ -1,0 +1,42 @@
+// Store last map settings for rebuild
+var lastMapSettings: MapSettings? = null
+
+fun generateMap(settings: MapSettings) {
+    // Keep a copy so rebuild doesn't mutate the original settings
+    lastMapSettings = settings.copy()
+
+    // Your normal map generation logic
+    MapGenerator.generate(settings)  // Replace with actual map generation call
+}
+
+Create “Rebuild Map” button 
+val rebuildButton = UIButton("Rebuild Map").apply {
+    isEnabled = lastMapSettings != null  // Disable if no map yet
+    onClick = {
+        lastMapSettings?.let { settings ->
+            generateMap(settings)
+        } ?: run {
+            println("No previous map to rebuild.")
+        }
+    }
+}
+
+3️⃣ Optional: Visual Feedback
+rebuildButton.onClick = {
+    lastMapSettings?.let { settings ->
+        Toast.show("Rebuilding map with previous settings...")
+        generateMap(settings)
+    } ?: run {
+        Toast.show("No previous map to rebuild.")
+    }
+}
+
+Optional Enhancement: Save Multiple Presets
+val mapPresets = mutableListOf<MapSettings>()
+
+fun generateMap(settings: MapSettings) {
+    lastMapSettings = settings.copy()
+    mapPresets.add(settings.copy()) // store history if needed
+    MapGenerator.generate(settings)
+}
+s

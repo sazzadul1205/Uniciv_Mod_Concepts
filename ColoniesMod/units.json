@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Colony Settler",
+    "unitType": "Civilian",
+    "movement": 2,
+    "cost": 150,
+    "requiredTech": "Guilds",
+    "uniques": [
+      "Founds a [Colony] city",
+      "Destroyed after founding a city",
+      "Can only be used after Guilds research",
+      "Only 1 colony can be founded per city initially"
+    ]
+  },
+  {
+    "name": "Colony Builder",
+    "unitType": "Builder",
+    "movement": 2,
+    "cost": 0,
+    "uniques": [
+      "Only build 1 improvement",
+      "Can only build on luxury resources",
+      "One-time use",
+      "Only available in Colony cities",
+      "Can only build on tiles adjacent to colony"
+    ],
+    "canBuild": ["LuxuryResource"]
+  }
+]

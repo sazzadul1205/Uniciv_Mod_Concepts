@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Colony Charter",
+    "buildingType": "National Wonder",
+    "cost": 0,
+    "uniques": [
+      "City cannot grow",
+      "Population capped at 1",
+      "City cannot work tiles more than 1 tile away",
+      "No buildings in this city",
+      "Cannot train units except Colony Builder",
+      "City has no defensive strength",
+      "Requires connection to capital [Road] to provide resources",
+      "City is razed completely if captured",
+      "Spawns one Colony Builder unit upon founding"
+    ]
+  }
+]

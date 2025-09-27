@@ -1,0 +1,9 @@
+{
+  "claimRadius": 1,
+  "requireConnection": true,
+  "harvestResourceOnly": true,
+  "allowStealingOtherCivsTiles": false,
+  "autoBuildRoadIfNeeded": false,
+  "consumeBuilderOnBuild": true,
+  "validResourceType": "Luxury"
+}
