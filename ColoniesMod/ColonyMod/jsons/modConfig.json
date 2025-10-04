@@ -1,4 +1,6 @@
-{
+// modConfig.json
+[
+  {
   "claimRadius": 1,
   "requireConnection": true,
   "harvestResourceOnly": true,
@@ -7,3 +9,5 @@
   "consumeBuilderOnBuild": true,
   "validResourceType": "Luxury"
 }
+
+]

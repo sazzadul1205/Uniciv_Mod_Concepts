@@ -1,3 +1,4 @@
+// canCityFoundColony
 fun canCityFoundColony(originCity: City, allColonies: List<City>, techTree: TechTree): Boolean {
     val initialTech = "Guilds"        // Unlocks the first colony
     val advancedTech = "Colonialism"  // Advanced tech to unlock up to 3 colonies per city
